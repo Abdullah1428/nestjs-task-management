@@ -11,6 +11,10 @@ export class TasksService {
     return this.tasks;
   }
 
+  async getTaskById(id: string): Promise<Task> {
+    return this.tasks.find((task) => task.id === id);
+  }
+
   async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     const { title, description } = createTaskDto;
 
@@ -21,6 +25,16 @@ export class TasksService {
       status: TaskStatus.OPEN,
     };
     this.tasks.push(task);
+    return task;
+  }
+
+  async deleteTask(id: string): Promise<void> {
+    this.tasks = this.tasks.filter((task) => task.id !== id);
+  }
+
+  async updateTaskStatus(id: string, status: TaskStatus): Promise<Task> {
+    const task = await this.getTaskById(id);
+    task.status = status;
     return task;
   }
 }
