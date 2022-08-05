@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { Task, TaskStatus } from './tasks.model';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 
 @Injectable() // makes this singleton that can be shared across the application
 export class TasksService {
@@ -9,6 +10,26 @@ export class TasksService {
 
   async getAllTasks(): Promise<Task[]> {
     return this.tasks;
+  }
+
+  async getTasksWithFilters(filterDto: GetTasksFilterDto): Promise<Task[]> {
+    const { status, search } = filterDto;
+
+    let tasks = await this.getAllTasks();
+    if (status) {
+      tasks = tasks.filter((task) => task.status === status);
+    }
+
+    if (search) {
+      tasks = tasks.filter((task) => {
+        if (task.title.includes(search) || task.description.includes(search)) {
+          return true;
+        }
+        return false;
+      });
+    }
+
+    return tasks;
   }
 
   async getTaskById(id: string): Promise<Task> {
