@@ -5,6 +5,8 @@ import {
   getRepositoryToken,
 } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -12,7 +14,16 @@ import { User } from './user.entity';
 import { UsersRepository } from './users.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: 'jwt-secret-123',
+      signOptions: {
+        expiresIn: 3600, // one hour
+      },
+    }),
+    TypeOrmModule.forFeature([User]),
+  ],
   providers: [
     {
       provide: getRepositoryToken(User),
