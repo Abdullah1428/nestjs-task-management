@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { TaskStatus } from './tasks.model';
 
 @Entity('task')
-export class TaskEntity {
+export class Task {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
