@@ -3,13 +3,13 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { Task } from './task.entity';
 import { TaskStatus } from './tasks-status.enum';
-export interface TaskRepo extends Repository<Task> {
+export interface TasksRepo extends Repository<Task> {
   this: Repository<Task>;
   createTask(createTaskDto: CreateTaskDto): Promise<Task>;
   getTasks(filterDto: GetTasksFilterDto): Promise<Task[]>;
 }
 
-export const TasksRepository: Pick<TaskRepo, 'createTask' | 'getTasks'> = {
+export const TasksRepository: Pick<TasksRepo, 'createTask' | 'getTasks'> = {
   async createTask(
     this: Repository<Task>,
     createTaskDto: CreateTaskDto,
