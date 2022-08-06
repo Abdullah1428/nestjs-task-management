@@ -7,7 +7,7 @@ import { TaskStatus } from './tasks-status.enum';
 export interface TasksRepo extends Repository<Task> {
   this: Repository<Task>;
   createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task>;
-  getTasks(filterDto: GetTasksFilterDto): Promise<Task[]>;
+  getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]>;
 }
 
 export const TasksRepository: Pick<TasksRepo, 'createTask' | 'getTasks'> = {
@@ -31,10 +31,12 @@ export const TasksRepository: Pick<TasksRepo, 'createTask' | 'getTasks'> = {
   async getTasks(
     this: Repository<Task>,
     filterDto: GetTasksFilterDto,
+    user: User,
   ): Promise<Task[]> {
     const { status, search } = filterDto;
 
     const query = this.createQueryBuilder('task');
+    query.where({ user });
 
     if (status) {
       query.andWhere('task.status = :status', { status });
@@ -42,7 +44,7 @@ export const TasksRepository: Pick<TasksRepo, 'createTask' | 'getTasks'> = {
 
     if (search) {
       query.andWhere(
-        'LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search)',
+        '(LOWER(task.title) LIKE LOWER(:search) OR LOWER(task.description) LIKE LOWER(:search))',
         { search: `%${search}%` },
       );
     }
