@@ -1,3 +1,7 @@
+import {
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { AuthCredDto } from './dto/auth-cred.dto';
 import { User } from './user.entity';
@@ -17,6 +21,17 @@ export const UsersRepository: Pick<UsersRepo, 'createUser'> = {
       username,
       password,
     });
-    await this.save(user);
+
+    try {
+      await this.save(user);
+    } catch (error) {
+      // 23505 error code for duplicates
+      // for production level you will handle this in service
+      if (error.code === '23505') {
+        throw new ConflictException('Username already exists');
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
   },
 };
