@@ -6,16 +6,18 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { User } from './user.entity';
 import { UsersRepo } from './users.repository';
 import { JwtPayload } from './jwt-payload.interface';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     @InjectRepository(User)
     private usersRepository: UsersRepo,
+    private configService: ConfigService,
   ) {
     super({
       // derived classes need to call super to initialize parent
-      secretOrKey: 'jwt-secret-123',
+      secretOrKey: configService.get('JWT_SECRET'),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
