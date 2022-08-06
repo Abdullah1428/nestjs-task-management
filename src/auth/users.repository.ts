@@ -5,6 +5,7 @@ import {
 import { Repository } from 'typeorm';
 import { AuthCredDto } from './dto/auth-cred.dto';
 import { User } from './user.entity';
+import * as bcrypt from 'bcrypt';
 
 export interface UsersRepo extends Repository<User> {
   this: Repository<User>;
@@ -17,9 +18,13 @@ export const UsersRepository: Pick<UsersRepo, 'createUser'> = {
     authCredDto: AuthCredDto,
   ): Promise<void> {
     const { username, password } = authCredDto;
+
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     const user = this.create({
       username,
-      password,
+      password: hashedPassword,
     });
 
     try {
